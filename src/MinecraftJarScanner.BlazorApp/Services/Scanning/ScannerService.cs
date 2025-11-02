@@ -35,7 +35,7 @@ public class ScannerService
     public async Task DeleteScannerAsync(Scanner scanner)
     {
         _scanners.Remove(scanner);
-        _logger.LogInformation("Deleted scanner {Id}", scanner.Id);
         await scanner.CancelAsync();
+        _logger.LogInformation("Deleted scanner {Id}", scanner.Id);
     }
 }

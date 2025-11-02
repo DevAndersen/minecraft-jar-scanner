@@ -1,72 +1,44 @@
-﻿@page "/{ScannerId:guid?}"
-@page "/scanner/{ScannerId:guid?}"
+﻿@page "/"
 @inject ScannerService ScannerService
 
-<PageTitle>Minecraft Jar Scanner</PageTitle>
 
-<div class="p-2">
-    <h1>Minecraft Jar Scanner</h1>
-    <div>A tool to help you search for Minecraft-related .jar files.</div>
-</div>
-
-<ul class="nav nav-tabs px-2">
-
-    <li class="px-1">
-        <button class="btn btn-success" @onclick="@NewScanner">New tab</button>
-    </li>
+<div class="px-5">
+    <button class="btn btn-success mb-2" @onclick="@NewScanner">New scanner</button>
 
     @foreach (Scanner scanner in ScannerService.GetScanners())
     {
-        <li class="nav-item px-1">
-            <NavLink class="nav-link" href="@($"/scanner/{scanner.Id}")">
-                @if (scanner.Status == ScannerStatus.Idle)
+        <div class="border rounded-1 p-3 mb-4">
+
+            <!-- Status -->
+            <div class="fs-5 mb-2">Status: <span class="badge text-bg-@StatusHelper.GetColorName(scanner.Status)">@scanner.Status</span></div>
+
+            <!-- Path -->
+            <div class="input-group mb-3">
+                <span class="input-group-text">Path</span>
+                <input type="text" class="form-control" placeholder="" aria-label="Directory path" @bind-value="@scanner.ScannerPath">
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex flex-row" style="gap: 6px">
+                <a class="btn btn-primary" href="/scanner/@scanner.Id">Open scanner</a>
+
+                @if (scanner.IsRunning)
                 {
-                    <span>New tab</span>
+                    <button class="btn btn-warning" type="button" @onclick="@(async () => await scanner.CancelAsync())">Cancel</button>
                 }
                 else
                 {
-                    <span>@scanner.ScannerPath</span>
+                    <button class="btn btn-success" type="button" @onclick="@(async () => await scanner.StartAsync())">Start scan</button>
                 }
-                <span class="ps-1">
-                    <span class="badge text-bg-@(StatusHelper.GetColorName(scanner.Status))">@scanner.Status</span>
-                </span>
-            </NavLink>
-        </li>
-    }
-</ul>
 
-@if (TryGetScanner(out Scanner? currentScanner))
-{
-    <div class="p-2">
-        <ScannerView Scanner="currentScanner" />
-    </div>
-}
+                <button class="btn btn-danger" @onclick="@(async () => await ScannerService.DeleteScannerAsync(scanner))">Delete scanner</button>
+            </div>
+        </div>
+	}
+</div>
 
 @code
 {
-    [Parameter]
-    public Guid? ScannerId { get; set; }
-
-    private bool TryGetScanner([NotNullWhen(true)] out Scanner? scanner)
-    {
-        scanner = null;
-
-        if (ScannerId.HasValue)
-        {
-            scanner = ScannerService.GetScanner(ScannerId.Value);
-        }
-        else
-        {
-            IReadOnlyList<Scanner> allScanners = ScannerService.GetScanners();
-            Scanner? firstScanner = allScanners.FirstOrDefault();
-            if (firstScanner != null)
-            {
-                scanner = firstScanner;
-            }
-        }
-        return scanner != null;
-    }
-
     private void NewScanner()
     {
         ScannerService.CreateNewScanner();

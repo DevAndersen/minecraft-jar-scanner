@@ -1,0 +1,51 @@
+﻿@page "/scanner/{ScannerId:guid}"
+@inject ScannerService ScannerService
+@inject NavigationManager NavMan
+
+@if (Scanner != null)
+{
+    <div class="p-2">
+        <ScannerView Scanner="Scanner" />
+    </div>
+}
+
+@code
+{
+    [Parameter]
+    public Guid? ScannerId { get; set; }
+
+    public Scanner? Scanner { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (TryGetScanner(out Scanner? scanner))
+        {
+            Scanner = scanner;
+        }
+        else
+        {
+			NavMan.NavigateTo("/");
+        }
+    }
+
+    private bool TryGetScanner([NotNullWhen(true)] out Scanner? scanner)
+    {
+        scanner = null;
+
+        if (ScannerId.HasValue)
+        {
+            scanner = ScannerService.GetScanner(ScannerId.Value);
+        }
+        else
+        {
+            IReadOnlyList<Scanner> allScanners = ScannerService.GetScanners();
+            Scanner? firstScanner = allScanners.FirstOrDefault();
+            if (firstScanner != null)
+            {
+                scanner = firstScanner;
+            }
+        }
+
+        return scanner != null;
+    }
+}
