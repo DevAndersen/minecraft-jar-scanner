@@ -1,4 +1,6 @@
-﻿@page "/"
+﻿@page "/{ScannerId:guid?}"
+@page "/scanner/{ScannerId:guid?}"
+@inject ScannerService ScannerService
 
 <PageTitle>Minecraft Jar Scanner</PageTitle>
 
@@ -8,19 +10,65 @@
 </div>
 
 <ul class="nav nav-tabs px-2">
-    <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="#">
-            <span>Tab 1</span>
-            <span class="badge text-bg-secondary">Ready</span>
-        </a>
-    </li>
+
     <li class="px-1">
-        <button class="btn btn-success">New tab</button>
+        <button class="btn btn-success" @onclick="@NewScanner">New tab</button>
     </li>
+
+    @foreach (Scanner scanner in ScannerService.GetScanners())
+    {
+        <li class="nav-item px-1">
+            <NavLink class="nav-link" href="@($"/scanner/{scanner.Id}")">
+                @if (scanner.Status == ScannerStatus.Idle)
+                {
+                    <span>New tab</span>
+                }
+                else
+                {
+                    <span>@scanner.ScannerPath</span>
+                }
+                <span class="ps-1">
+                    <span class="badge text-bg-@(StatusHelper.GetColorName(scanner.Status))">@scanner.Status</span>
+                </span>
+            </NavLink>
+        </li>
+    }
 </ul>
 
-<div class="d-flex flex-column px-2">
+@if (TryGetScanner(out Scanner? currentScanner))
+{
+    <div class="p-2">
+        <ScannerView Scanner="currentScanner" />
+    </div>
+}
 
-    <Scanner />
+@code
+{
+    [Parameter]
+    public Guid? ScannerId { get; set; }
 
-</div>
+    private bool TryGetScanner([NotNullWhen(true)] out Scanner? scanner)
+    {
+        scanner = null;
+
+        if (ScannerId.HasValue)
+        {
+            scanner = ScannerService.GetScanner(ScannerId.Value);
+        }
+        else
+        {
+            IReadOnlyList<Scanner> allScanners = ScannerService.GetScanners();
+            Scanner? firstScanner = allScanners.FirstOrDefault();
+            if (firstScanner != null)
+            {
+                scanner = firstScanner;
+            }
+        }
+        return scanner != null;
+    }
+
+    private void NewScanner()
+    {
+        ScannerService.CreateNewScanner();
+	}
+}

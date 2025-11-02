@@ -2,6 +2,8 @@ using MinecraftJarScanner.BlazorApp.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton<ScannerService>();
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

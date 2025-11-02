@@ -1,0 +1,83 @@
+﻿@inject ScannerService ScannerService
+
+<!-- Delete -->
+<div class="float-end">
+    <button class="btn btn-danger" @onclick="DeleteAsync">Delete tab</button>
+</div>
+
+<h2 class="fs-3">Status</h2>
+
+<!-- Status -->
+<div class="p-2">
+    <div class="alert alert-@(StatusHelper.GetColorName(Scanner.Status))" role="alert">
+        @Scanner.Status
+    </div>
+</div>
+
+<hr />
+
+<h2 class="fs-3">Controls</h2>
+
+<!-- Path -->
+<div class="p-2">
+    <div class="input-group mb-3">
+        <span class="input-group-text">Path</span>
+        <input type="text" class="form-control" placeholder="" aria-label="Directory path" @bind-value="@Scanner.ScannerPath">
+    </div>
+</div>
+
+<!-- Actions -->
+@if (Scanner.IsRunning)
+{
+    <button class="btn btn-warning" type="button" @onclick="CancelAsync">Cancel</button>
+}
+else
+{
+    <button class="btn btn-success" type="button" @onclick="StartAsync">Start scan</button>
+}
+
+<hr />
+
+<!-- Output -->
+<h2 class="fs-3">Output</h2>
+<div class="p-2">
+    <div class="accordion" id="accordion-section">
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Log
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordion-section">
+                <div class="accordion-body">
+                    
+                    <div>Content</div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code
+{
+    [Parameter, EditorRequired]
+    public required Scanner Scanner { get; init; }
+
+    private async Task StartAsync()
+    {
+        await Scanner.StartAsync();
+    }
+
+    private async Task CancelAsync()
+    {
+        await Scanner.CancelAsync();
+    }
+
+    private async Task DeleteAsync()
+    {
+        await ScannerService.DeleteScannerAsync(Scanner);
+    }
+}
