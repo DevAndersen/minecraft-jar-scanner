@@ -4,5 +4,6 @@
     <File Path="README.md" />
   </Folder>
   <Project Path="src/MinecraftJarScanner.BlazorApp/MinecraftJarScanner.BlazorApp.csproj" Id="2e41019d-f096-4a49-9d17-4bf951270ea3" />
+  <Project Path="src/MinecraftJarScanner.Lib/MinecraftJarScanner.Lib.csproj" Id="f22ae4e1-9e05-41b8-9f70-43cedd664f22" />
   <Project Path="src/MinecraftJarScanner/MinecraftJarScanner.csproj" Id="e8008c48-74c2-44f8-8ea0-b03693a79fce" />
 </Solution>
