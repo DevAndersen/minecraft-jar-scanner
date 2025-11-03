@@ -9,13 +9,12 @@ public class Scanner
 
     private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
     private JarScanner? _scanner;
-    private readonly List<IScannerResult> _results = [];
 
     public required Guid Id { get; init; }
 
     public required string ScannerPath { get; set; }
 
-    public IReadOnlyList<IScannerResult> Results => _results;
+    public IReadOnlyList<IScannerResult> Results => _scanner?.Results ?? [];
 
     public Scanner(ILogger<Scanner> logger)
     {

@@ -1,4 +1,5 @@
-﻿@inject ScannerService ScannerService
+﻿@using MinecraftJarScanner.Lib.Models
+@inject ScannerService ScannerService
 @inject NavigationManager NavMan
 
 <div class="float-start mb-3">
@@ -55,7 +56,10 @@
             <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordion-section">
                 <div class="accordion-body">
                     
-                    <div>Content</div>
+                    @foreach (IScannerResult result in Scanner.Results)
+                    {
+                        <div>Content</div>
+                    }
 
                 </div>
             </div>

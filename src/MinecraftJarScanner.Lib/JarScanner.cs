@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using MinecraftJarScanner.Lib.Models;
+using System.Runtime.CompilerServices;
 
 namespace MinecraftJarScanner.Lib;
 
@@ -7,13 +8,17 @@ public class JarScanner
     private static readonly string zipFileType = ".zip";
     private static readonly string jarFileType = ".jar";
 
+    private readonly List<IScannerResult> _results = [];
+
     public ScannerStatus Status { get; private set; }
 
     public string? StatusMessage { get; private set; }
 
-    public int FilesScanned { get; set; }
+    public int FilesScanned { get; private set; }
 
-    public Exception? Exception { get; set; }
+    public Exception? Exception { get; private set; }
+
+    public IReadOnlyList<IScannerResult> Results => _results;
 
     public async Task ScanAsync(string directory, CancellationToken cancellationToken)
     {
@@ -35,8 +40,11 @@ public class JarScanner
             IAsyncEnumerable<string> files = ScanDirectoryAsync(directory, cancellationToken);
             await foreach (string file in files)
             {
+                _results.Add(await ScanFileAsync(file, cancellationToken));
                 FilesScanned++;
             }
+
+            SetStatus(ScannerStatus.Completed);
         }
         catch (Exception e)
         {
@@ -67,6 +75,27 @@ public class JarScanner
             {
                 yield return file;
             }
+        }
+    }
+
+    private static async Task<IScannerResult> ScanFileAsync(string file, CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Todo
+            return new ScannerResultJarFile
+            {
+                Path = file,
+                Hash = "TODO" // Todo
+            };
+        }
+        catch (Exception e)
+        {
+            return new ScannerResultError
+            {
+                Path = file,
+                Exception = e
+            };
         }
     }
 
