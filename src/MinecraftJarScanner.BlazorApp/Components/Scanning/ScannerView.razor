@@ -22,7 +22,7 @@
 <div class="p-2">
     <div class="input-group mb-3">
         <span class="input-group-text">Path</span>
-        <input type="text" class="form-control" placeholder="" aria-label="Directory path" @bind-value="@Scanner.ScannerPath">
+        <input type="text" class="form-control" placeholder="" aria-label="Directory path" @bind-value="@Scanner.ScannerPath" disabled="@Scanner.IsRunning">
     </div>
 </div>
 

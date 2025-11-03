@@ -1,4 +1,4 @@
-﻿namespace MinecraftJarScanner.BlazorApp.Models;
+﻿namespace MinecraftJarScanner.Lib;
 
 public enum ScannerStatus
 {

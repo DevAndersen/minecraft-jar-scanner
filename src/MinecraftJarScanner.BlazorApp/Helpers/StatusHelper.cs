@@ -1,4 +1,6 @@
-﻿namespace MinecraftJarScanner.BlazorApp.Helpers;
+﻿using MinecraftJarScanner.Lib;
+
+namespace MinecraftJarScanner.BlazorApp.Helpers;
 
 public static class StatusHelper
 {

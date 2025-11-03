@@ -1,7 +1,6 @@
 ﻿@page "/"
 @inject ScannerService ScannerService
 
-
 <div class="px-5">
     <button class="btn btn-success mb-2" @onclick="@NewScanner">New scanner</button>
 
@@ -15,7 +14,7 @@
             <!-- Path -->
             <div class="input-group mb-3">
                 <span class="input-group-text">Path</span>
-                <input type="text" class="form-control" placeholder="" aria-label="Directory path" @bind-value="@scanner.ScannerPath">
+                <input type="text" class="form-control" aria-label="Directory path" @bind-value="@scanner.ScannerPath" disabled="@scanner.IsRunning">
             </div>
 
             <!-- Buttons -->

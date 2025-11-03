@@ -1,13 +1,21 @@
-﻿namespace MinecraftJarScanner.BlazorApp.Models;
+﻿using MinecraftJarScanner.Lib;
+using MinecraftJarScanner.Lib.Models;
+
+namespace MinecraftJarScanner.BlazorApp.Models;
 
 public class Scanner
 {
     private readonly ILogger<Scanner> _logger;
+
     private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+    private JarScanner? _scanner;
+    private readonly List<IScannerResult> _results = [];
 
     public required Guid Id { get; init; }
 
     public required string ScannerPath { get; set; }
+
+    public IReadOnlyList<IScannerResult> Results => _results;
 
     public Scanner(ILogger<Scanner> logger)
     {
@@ -16,47 +24,42 @@ public class Scanner
 
     public string TabName => Path.GetFileName(ScannerPath);
 
-    public ScannerStatus Status { get; private set; } = ScannerStatus.Idle;
+    public ScannerStatus Status => _scanner?.Status ?? ScannerStatus.Idle;
 
-    public string? StatusMessage { get; private set; }
+    public string? StatusMessage => _scanner?.StatusMessage;
 
-    public bool IsRunning => Status == ScannerStatus.Scanning;
+    public bool IsRunning => _scanner?.Status == ScannerStatus.Scanning;
 
     public async Task StartAsync()
     {
-        _cancellationTokenSource = new CancellationTokenSource();
+        if (IsRunning)
+        {
+            return;
+        }
 
         _logger.LogInformation("Starting scanner {Id} on directory {ScannerPath}", Id, ScannerPath);
-        Status = ScannerStatus.Scanning;
 
-        SetStatus(ScannerStatus.Scanning, "Debug wait");
-        await Task.Delay(2000, _cancellationTokenSource.Token);
+        _cancellationTokenSource = new CancellationTokenSource();
+
+        _scanner = new JarScanner();
+        await _scanner.ScanAsync(ScannerPath, _cancellationTokenSource.Token);
 
         if (_cancellationTokenSource.IsCancellationRequested)
         {
-            SetStatus(ScannerStatus.Cancelled, "Scan was cancelled");
             return;
         }
 
         _logger.LogInformation("Completed scanner {Id} on directory {ScannerPath}", Id, ScannerPath);
-        SetStatus(ScannerStatus.Completed, "Scan completed");
-    }
-
-    public void SetStatus(ScannerStatus status, string? message = null)
-    {
-        Status = status;
-        StatusMessage = message;
     }
 
     public async Task CancelAsync()
     {
-        if (!IsRunning)
+        if (!IsRunning || _cancellationTokenSource.IsCancellationRequested)
         {
             return;
         }
 
         _cancellationTokenSource.Cancel();
-        Status = ScannerStatus.Cancelled;
         _logger.LogInformation("Cancelled scanner {Id}", Id);
     }
 }
