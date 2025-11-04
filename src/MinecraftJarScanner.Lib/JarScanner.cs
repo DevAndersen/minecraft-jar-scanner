@@ -1,4 +1,6 @@
-﻿using MinecraftJarScanner.Lib.Models;
+﻿using MinecraftJarScanner.Lib.Analyzers;
+using MinecraftJarScanner.Lib.Helpers;
+using MinecraftJarScanner.Lib.Models;
 using System.Runtime.CompilerServices;
 
 namespace MinecraftJarScanner.Lib;
@@ -40,7 +42,12 @@ public class JarScanner
             IAsyncEnumerable<string> files = ScanDirectoryAsync(directory, cancellationToken);
             await foreach (string file in files)
             {
-                _results.Add(await ScanFileAsync(file, cancellationToken));
+                IScannerResult? result = await ScanFileAsync(file, cancellationToken);
+                if (result != null)
+                {
+                    _results.Add(result);
+                }
+
                 FilesScanned++;
             }
 
@@ -71,23 +78,29 @@ public class JarScanner
                 yield break;
             }
 
-            if (IsFileType(file, zipFileType) || IsFileType(file, jarFileType))
+            if (FileHelper.IsFileType(file, zipFileType) || FileHelper.IsFileType(file, jarFileType))
             {
                 yield return file;
             }
         }
     }
 
-    private static async Task<IScannerResult> ScanFileAsync(string file, CancellationToken cancellationToken)
+    private static async Task<IScannerResult?> ScanFileAsync(string file, CancellationToken cancellationToken)
     {
         try
         {
-            // Todo
-            return new ScannerResultJarFile
+            if (FileHelper.IsFileType(file, zipFileType))
             {
-                Path = file,
-                Hash = "TODO" // Todo
-            };
+                return await ZipAnalyzer.AnalyzeAsync(file, cancellationToken);
+            }
+            else if (FileHelper.IsFileType(file, jarFileType))
+            {
+                return await JarAnalyzer.AnalyzeAsync(file, cancellationToken);
+            }
+            else
+            {
+                return null;
+            }
         }
         catch (Exception e)
         {
@@ -103,11 +116,5 @@ public class JarScanner
     {
         Status = status;
         StatusMessage = message;
-    }
-
-    private static bool IsFileType(string fileName, string extension)
-    {
-        return Path.GetExtension(fileName)
-            .Equals(extension, StringComparison.OrdinalIgnoreCase);
     }
 }
