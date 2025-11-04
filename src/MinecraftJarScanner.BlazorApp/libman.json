@@ -8,8 +8,8 @@
             "destination": "wwwroot/lib/bootstrap",
             "files":
             [
-                "css/bootstrap.min.css",
-                "js/bootstrap.bundle.min.js"
+                "css/bootstrap.**",
+                "js/bootstrap.**"
             ]
         },
         {
@@ -18,7 +18,8 @@
             "files":
             [
                 "font/bootstrap-icons.min.css",
-                "font/fonts/bootstrap-icons.woff"
+                "font/fonts/bootstrap-icons.woff",
+                "icons/search.svg"
             ]
         }
     ]

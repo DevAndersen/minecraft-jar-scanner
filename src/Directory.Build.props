@@ -1,0 +1,23 @@
+<Project>
+
+	<!-- Basics -->
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<!-- Code quality -->
+	<PropertyGroup>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<WarningsNotAsErrors>NU1901,NU1902,NU1903</WarningsNotAsErrors>
+	</PropertyGroup>
+
+	<!-- Do not output debug symbol files in release mode -->
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DebugSymbols>False</DebugSymbols>
+		<DebugType>None</DebugType>
+	</PropertyGroup>
+
+</Project>

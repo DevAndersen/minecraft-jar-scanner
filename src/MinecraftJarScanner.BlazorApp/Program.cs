@@ -8,6 +8,13 @@ builder.Services.AddSingleton<ScannerService>();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Attempt to add appsettings.json from embedded resource stream.
+using Stream? appsettingsStream = typeof(Program).Assembly.GetManifestResourceStream($"{typeof(Program).Assembly.GetName().Name}.appsettings.json");
+if (appsettingsStream != null)
+{
+    builder.Configuration.AddJsonStream(appsettingsStream);
+}
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
