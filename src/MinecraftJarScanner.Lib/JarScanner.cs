@@ -106,7 +106,7 @@ public class JarScanner
         {
             return new ScannerResultError
             {
-                Path = file,
+                FullPath = file,
                 Exception = e
             };
         }

@@ -2,5 +2,7 @@
 
 public interface IScannerResult
 {
-    string Path { get; }
+    string FullPath { get; }
+
+    string Name => Path.GetFileName(FullPath);
 }

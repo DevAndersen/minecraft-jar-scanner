@@ -15,7 +15,7 @@ internal static class JarAnalyzer
         // Todo
         return new ScannerResultJarFile
         {
-            Path = path,
+            FullPath = path,
             Hash = "TODO"
         };
     }

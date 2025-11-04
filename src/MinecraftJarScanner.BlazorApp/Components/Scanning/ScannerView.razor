@@ -43,34 +43,19 @@
     }
 </div>
 
-<hr />
-
-<!-- Output -->
-<h2 class="fs-3">Output</h2>
-<div class="p-2">
-    <div class="accordion" id="accordion-section">
-
-        <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                    Log
-                </button>
-            </h2>
-            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordion-section">
-                <div class="accordion-body">
-                    
-                    @foreach (IScannerResult result in Scanner.Results)
-                    {
-                        <div>Content</div>
-                    }
-
-                </div>
-            </div>
-        </div>
-
-
+<!-- Results -->
+@if (Scanner.Results.Count > 0)
+{
+    <h2 class="fs-3">Results</h2>
+    <div class="bg-body border rounded shadow-sm p-3 mb-4">
+        <ul>
+            @foreach (IScannerResult result in Scanner.Results)
+            {
+                <ScannerResultView Item="result" />
+            }
+        </ul>
     </div>
-</div>
+}
 
 @code
 {
@@ -91,5 +76,18 @@
     {
         await ScannerService.DeleteScannerAsync(Scanner);
         NavMan.NavigateTo("/");
+    }
+
+    private RenderFragment RenderZip(ScannerResultZipFile zipFile)
+    {
+        return __builder =>
+        {
+            <div class="border d-flex fs-5">
+                @foreach (var v1 in zipFile.Results)
+                {
+                    <div>asdf</div>
+                }
+            </div>
+        };
     }
 }

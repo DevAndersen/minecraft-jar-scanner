@@ -1,0 +1,50 @@
+﻿<li>
+	<div class="d-flex">
+		<i class="bi @GetIconClasses(Item) me-1"></i>
+		<div class="user-select-all">@Item.Name</div>
+	</div>
+
+	<div class="text-secondary fs-6 fst-italic user-select-all">@Item.FullPath</div>
+
+	@if (Item is ScannerResultJarFile java)
+	{
+		<div>Java</div>
+	}
+	else if (Item is ScannerResultZipFile zip)
+	{
+		<ul>
+			@foreach (IScannerResult nestedItem in zip.Results)
+			{
+				<ScannerResultView Item="nestedItem" />
+			}
+		</ul>
+	}
+	else if (Item is ScannerResultError error)
+	{
+		<div>
+			<div>Error - @error.Exception.GetType().Name</div>
+			<pre class="overflow-scroll">@error.Exception</pre>
+		</div>
+	}
+	else
+	{
+		<div>Unexpected scanner result type @Item.GetType().FullName</div>
+	}
+</li>
+
+@code
+{
+	[Parameter, EditorRequired]
+	public required IScannerResult Item { get; init; }
+
+	private static string GetIconClasses(IScannerResult item)
+	{
+		return item switch
+		{
+			ScannerResultJarFile => "bi-archive-fill text-success",
+			ScannerResultZipFile => "bi-file-earmark-zip-fill text-primary",
+			ScannerResultError => "bi-file-earmark-x text-danger",
+			_ => "bi-question-circle-fill text-danger"
+		};
+	}
+}

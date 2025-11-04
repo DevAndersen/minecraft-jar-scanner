@@ -15,7 +15,7 @@ internal static class ZipAnalyzer
 
         return new ScannerResultZipFile
         {
-            Path = file,
+            FullPath = file,
             Results = results.ToArray()
         };
     }
@@ -33,7 +33,7 @@ internal static class ZipAnalyzer
 
                 results.Add(new ScannerResultZipFile
                 {
-                    Path = entry.FullName,
+                    FullPath = entry.FullName,
                     Results = nestedResults.ToArray()
                 });
             }
