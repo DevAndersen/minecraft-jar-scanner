@@ -1,8 +1,8 @@
 using MinecraftJarScanner.BlazorApp.Components;
-using System.Text.Json;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+// Service registrations.
 builder.Services.AddSingleton<ScannerService>();
 
 // Add services to the container.

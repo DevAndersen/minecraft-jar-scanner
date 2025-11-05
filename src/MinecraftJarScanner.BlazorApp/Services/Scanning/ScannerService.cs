@@ -1,7 +1,8 @@
-﻿using System.Text.Json;
+﻿namespace MinecraftJarScanner.BlazorApp.Services.Scanning;
 
-namespace MinecraftJarScanner.BlazorApp.Services.Scanning;
-
+/// <summary>
+/// Provides logic for managing scanners.
+/// </summary>
 public class ScannerService
 {
     private readonly ILogger<ScannerService> _logger;
@@ -19,6 +20,9 @@ public class ScannerService
         _loggerFactory = loggerFactory;
     }
 
+    /// <summary>
+    /// Add a new <see cref="Scanner"/>.
+    /// </summary>
     public void CreateNewScanner()
     {
         ILogger<Scanner> logger = _loggerFactory.CreateLogger<Scanner>();
@@ -29,16 +33,33 @@ public class ScannerService
         });
     }
 
+    /// <summary>
+    /// Attempt to retrieve the <see cref="Scanner"/> with the specified <paramref name="id"/>.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public Scanner? GetScanner(Guid id)
     {
         return _scanners.FirstOrDefault(x => x.Id == id);
     }
 
+    /// <summary>
+    /// Retrieve all <see cref="Scanner"/>s.
+    /// </summary>
+    /// <returns></returns>
     public IReadOnlyList<Scanner> GetScanners()
     {
         return _scanners;
     }
 
+    /// <summary>
+    /// Delete the specified <paramref name="scanner"/>.
+    /// </summary>
+    /// <remarks>
+    /// If <paramref name="scanner"/> is scanning, it will be cancelled.
+    /// </remarks>
+    /// <param name="scanner"></param>
+    /// <returns></returns>
     public async Task DeleteScannerAsync(Scanner scanner)
     {
         _scanners.Remove(scanner);
@@ -46,6 +67,11 @@ public class ScannerService
         _logger.LogInformation("Deleted scanner {Id}", scanner.Id);
     }
 
+    /// <summary>
+    /// Returns the UTF-8 encoded log file content for <paramref name="scanner"/>.
+    /// </summary>
+    /// <param name="scanner"></param>
+    /// <returns></returns>
     public byte[] GetLogFile(Scanner scanner)
     {
         return JsonSerializer.SerializeToUtf8Bytes(scanner, _logFileSerializationOptions);

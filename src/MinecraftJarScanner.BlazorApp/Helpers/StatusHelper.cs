@@ -1,7 +1,8 @@
-﻿using MinecraftJarScanner.Lib;
+﻿namespace MinecraftJarScanner.BlazorApp.Helpers;
 
-namespace MinecraftJarScanner.BlazorApp.Helpers;
-
+/// <summary>
+/// Contains helper logic related to <see cref="ScannerStatus"/>.
+/// </summary>
 public static class StatusHelper
 {
     /// <summary>

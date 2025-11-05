@@ -1,7 +1,6 @@
 ﻿using MinecraftJarScanner.Lib.Helpers;
 using MinecraftJarScanner.Lib.Models;
 using System.IO.Compression;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace MinecraftJarScanner.Lib.Analyzers;

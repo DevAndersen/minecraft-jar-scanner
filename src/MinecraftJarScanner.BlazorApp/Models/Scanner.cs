@@ -1,7 +1,4 @@
-﻿using MinecraftJarScanner.Lib;
-using MinecraftJarScanner.Lib.Models;
-
-namespace MinecraftJarScanner.BlazorApp.Models;
+﻿namespace MinecraftJarScanner.BlazorApp.Models;
 
 public class Scanner
 {
@@ -16,18 +13,16 @@ public class Scanner
 
     public IReadOnlyList<IScannerResult> Results => _scanner?.Results ?? [];
 
-    public Scanner(ILogger<Scanner> logger)
-    {
-        _logger = logger;
-    }
-
-    public string TabName => Path.GetFileName(ScannerPath);
-
     public ScannerStatus Status => _scanner?.Status ?? ScannerStatus.Idle;
 
     public string? StatusMessage => _scanner?.StatusMessage;
 
     public bool IsRunning => _scanner?.Status == ScannerStatus.Scanning;
+
+    public Scanner(ILogger<Scanner> logger)
+    {
+        _logger = logger;
+    }
 
     public async Task StartAsync()
     {
