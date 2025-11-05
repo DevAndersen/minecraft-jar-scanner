@@ -1,10 +1,17 @@
-﻿namespace MinecraftJarScanner.BlazorApp.Services.Scanning;
+﻿using System.Text.Json;
+
+namespace MinecraftJarScanner.BlazorApp.Services.Scanning;
 
 public class ScannerService
 {
     private readonly ILogger<ScannerService> _logger;
     private readonly ILoggerFactory _loggerFactory;
+
     private readonly List<Scanner> _scanners = [];
+    private readonly JsonSerializerOptions _logFileSerializationOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+    {
+        WriteIndented = true
+    };
 
     public ScannerService(ILogger<ScannerService> logger, ILoggerFactory loggerFactory)
     {
@@ -37,5 +44,10 @@ public class ScannerService
         _scanners.Remove(scanner);
         await scanner.CancelAsync();
         _logger.LogInformation("Deleted scanner {Id}", scanner.Id);
+    }
+
+    public byte[] GetLogFile(Scanner scanner)
+    {
+        return JsonSerializer.SerializeToUtf8Bytes(scanner, _logFileSerializationOptions);
     }
 }

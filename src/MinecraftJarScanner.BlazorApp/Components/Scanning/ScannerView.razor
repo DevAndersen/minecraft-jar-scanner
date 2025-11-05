@@ -48,6 +48,12 @@
 {
     <h2 class="fs-3">Results</h2>
     <div class="bg-body border rounded shadow-sm p-3 mb-4">
+
+        <!-- Download log -->
+        <form action="scanner/@(Scanner.Id)/log">
+            <input class="btn btn-primary" type="submit" value="Download log" />
+        </form>
+
         <ul>
             @foreach (IScannerResult result in Scanner.Results)
             {

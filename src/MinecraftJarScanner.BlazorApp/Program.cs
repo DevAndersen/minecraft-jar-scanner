@@ -1,4 +1,5 @@
 using MinecraftJarScanner.BlazorApp.Components;
+using System.Text.Json;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -28,5 +29,22 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+// The API endpoint for downloading log files.
+app.MapGet("/scanner/{scannerId:guid}/log", (Guid scannerId, ScannerService scannerService) =>
+{
+    Scanner? scanner = scannerService.GetScanner(scannerId);
+    if (scanner == null)
+    {
+        return Results.NotFound();
+    }
+
+    byte[] json = scannerService.GetLogFile(scanner);
+
+    return Results.File(
+        json,
+        "application/json",
+        $"minecraft-jar-log_{DateTimeOffset.UtcNow:yyyy-MM-dd_HH-mm-ss}.txt");
+});
 
 app.Run();
