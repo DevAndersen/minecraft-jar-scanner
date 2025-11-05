@@ -20,6 +20,24 @@ To build this project from source, you need the [.NET SDK](https://dotnet.micros
 
 *=== TODO ===*
 
+## Q&A
+
+**Q:** Why is the program file so large?
+
+- **A:** Rather than requiring you to install the [.NET runtime](https://dotnet.microsoft.com) separately, the program file includes the necessary runtime. This was done to avoid requiring the .NET runtime to be installed separately on your computer, but does mean that the program file is correspondingly larger.
+
+**Q:** Why is the user interface accessed via a web browser?
+
+- **A:** I mostly work with [Blazor](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor) these days, which I also chose to use for this application. I simply felt it was the easiest choice for me to writing a user interface in. This application does not send or receive any data via the Internet.
+
+**Q:** Does this application change any of my files?
+
+- **A:** No, it simply reads through the directories you tell it to search through (including checking inside of .zip files). It does not change any of the files it looks at.
+
+**Q:** Does this application gather any personal data or telemetry?
+
+- **A:** No, none of your personal data is gathered or sent anywhere. Do note though, that if you download a log file after a scan, it will contain the full paths of the files it found, which may contain things like your local username that might be considered sensitive data. You should therefore read these files through before sending them to anyone, in order to make sure that you are not sending any information that you might not wish to share with others.
+
 ## Disclaimer
 
 This project is in no way affiliated with Mojang Studios, Microsoft, or any of their partners.
