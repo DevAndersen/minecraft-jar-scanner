@@ -1,7 +1,7 @@
 ﻿@page "/"
 @inject ScannerService ScannerService
 
-<button class="btn btn-success shadow-sm mb-3" @onclick="@NewScanner">New scanner</button>
+<button class="btn btn-success shadow-sm mb-3" @onclick="@ScannerService.CreateNewScanner">New scanner</button>
 
 @foreach (Scanner scanner in ScannerService.GetScanners())
 {
@@ -13,7 +13,7 @@
         <!-- Path -->
         <div class="input-group mb-3">
             <span class="input-group-text">Path</span>
-            <input type="text" class="form-control" aria-label="Directory path" @bind-value="@scanner.ScannerPath" disabled="@scanner.IsRunning">
+            <input type="text" class="form-control" placeholder="Example: C:\User\Username\..." aria-label="Directory path" @bind-value="@scanner.ScannerPath" disabled="@scanner.IsRunning">
         </div>
 
         <!-- Buttons -->
@@ -32,12 +32,4 @@
             <button class="btn btn-danger" @onclick="@(async () => await ScannerService.DeleteScannerAsync(scanner))">Delete scanner</button>
         </div>
     </div>
-}
-
-@code
-{
-    private void NewScanner()
-    {
-        ScannerService.CreateNewScanner();
-	}
 }

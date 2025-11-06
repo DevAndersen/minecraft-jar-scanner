@@ -7,7 +7,7 @@ namespace MinecraftJarScanner.Lib.Analyzers;
 
 internal static class ZipAnalyzer
 {
-    public static async Task<ScannerResultZipFile> AnalyzeAsync(string file, CancellationToken cancellationToken)
+    public static async Task<IScannerResult> AnalyzeAsync(string file, CancellationToken cancellationToken)
     {
         using ZipArchive zip = ZipFile.Open(file, ZipArchiveMode.Read);
         IEnumerable<IScannerResult> results = await ScanZipEntriesAsync(zip.Entries, cancellationToken);

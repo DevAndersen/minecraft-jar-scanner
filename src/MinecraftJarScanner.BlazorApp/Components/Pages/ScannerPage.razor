@@ -16,7 +16,7 @@
 
     protected override void OnInitialized()
     {
-        if (TryGetScanner(out Scanner? scanner))
+        if (ScannerId.HasValue && ScannerService.TryGetScanner(ScannerId.Value, out Scanner? scanner))
         {
             Scanner = scanner;
         }
@@ -24,26 +24,5 @@
         {
 			NavMan.NavigateTo("/");
         }
-    }
-
-    private bool TryGetScanner([NotNullWhen(true)] out Scanner? scanner)
-    {
-        scanner = null;
-
-        if (ScannerId.HasValue)
-        {
-            scanner = ScannerService.GetScanner(ScannerId.Value);
-        }
-        else
-        {
-            IReadOnlyList<Scanner> allScanners = ScannerService.GetScanners();
-            Scanner? firstScanner = allScanners.FirstOrDefault();
-            if (firstScanner != null)
-            {
-                scanner = firstScanner;
-            }
-        }
-
-        return scanner != null;
     }
 }

@@ -3,6 +3,7 @@
 @inject NavigationManager NavMan
 
 <div class="hstack gap-3 mb-3">
+
     <!-- Back -->
     <a class="btn btn-primary shadow-sm" href="/">Back to overview</a>
 
@@ -28,7 +29,7 @@
     <!-- Path -->
     <div class="input-group mb-3">
         <span class="input-group-text">Path</span>
-        <input type="text" class="form-control" placeholder="" aria-label="Directory path" @bind-value="@Scanner.ScannerPath" disabled="@Scanner.IsRunning">
+        <input type="text" class="form-control" placeholder="Example: C:\User\Username\..." aria-label="Directory path" @bind-value="@Scanner.ScannerPath" disabled="@Scanner.IsRunning">
     </div>
 
 </div>
@@ -60,6 +61,7 @@
                 <ScannerResultView Item="result" />
             }
         </ul>
+
     </div>
 }
 
@@ -82,18 +84,5 @@
     {
         await ScannerService.DeleteScannerAsync(Scanner);
         NavMan.NavigateTo("/");
-    }
-
-    private RenderFragment RenderZip(ScannerResultZipFile zipFile)
-    {
-        return __builder =>
-        {
-            <div class="border d-flex fs-5">
-                @foreach (var v1 in zipFile.Results)
-                {
-                    <div>asdf</div>
-                }
-            </div>
-        };
     }
 }

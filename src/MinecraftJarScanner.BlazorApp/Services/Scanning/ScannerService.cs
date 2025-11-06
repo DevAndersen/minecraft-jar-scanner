@@ -1,4 +1,6 @@
-﻿namespace MinecraftJarScanner.BlazorApp.Services.Scanning;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace MinecraftJarScanner.BlazorApp.Services.Scanning;
 
 /// <summary>
 /// Provides logic for managing scanners.
@@ -38,9 +40,10 @@ public class ScannerService
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public Scanner? GetScanner(Guid id)
+    public bool TryGetScanner(Guid id, [NotNullWhen(true)] out Scanner? scanner)
     {
-        return _scanners.FirstOrDefault(x => x.Id == id);
+        scanner = _scanners.FirstOrDefault(x => x.Id == id);
+        return scanner != null;
     }
 
     /// <summary>

@@ -7,9 +7,6 @@ namespace MinecraftJarScanner.Lib;
 
 public class JarScanner
 {
-    private static readonly string zipFileType = ".zip";
-    private static readonly string jarFileType = ".jar";
-
     private readonly List<IScannerResult> _results = [];
 
     public ScannerStatus Status { get; private set; }
@@ -22,7 +19,13 @@ public class JarScanner
 
     public IReadOnlyList<IScannerResult> Results => _results;
 
-    public async Task ScanAsync(string directory, CancellationToken cancellationToken)
+    /// <summary>
+    /// Starts scanning <paramref name="directory"/> for results.
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async Task ScanAsync(string directory, CancellationToken cancellationToken = default)
     {
         if (Status != ScannerStatus.Idle)
         {
@@ -56,7 +59,7 @@ public class JarScanner
         catch (Exception e)
         {
             Exception = e;
-            SetStatus(ScannerStatus.Error, "An error occurred");
+            SetStatus(ScannerStatus.Error, $"An {e.GetType().Name} occurred: {e.Message}");
         }
         finally
         {
@@ -67,8 +70,15 @@ public class JarScanner
         }
     }
 
+    /// <summary>
+    /// Returns an asynchronously iterator over all files in <paramref name="directory"/>, including nested directories.
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     private static async IAsyncEnumerable<string> ScanDirectoryAsync(string directory, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        // Find all files in the directory.
         IEnumerable<string> files = Directory.EnumerateFiles(directory, "*.*", SearchOption.AllDirectories);
 
         foreach (var file in files)
@@ -78,22 +88,28 @@ public class JarScanner
                 yield break;
             }
 
-            if (FileHelper.IsFileType(file, zipFileType) || FileHelper.IsFileType(file, jarFileType))
+            if (FileHelper.IsFileType(file, ScannerConstants.ZipFileType) || FileHelper.IsFileType(file, ScannerConstants.JarFileType))
             {
                 yield return file;
             }
         }
     }
 
+    /// <summary>
+    /// Scans <paramref name="file"/> and determines if it contains any data of interest.
+    /// </summary>
+    /// <param name="file"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     private static async Task<IScannerResult?> ScanFileAsync(string file, CancellationToken cancellationToken)
     {
         try
         {
-            if (FileHelper.IsFileType(file, zipFileType))
+            if (FileHelper.IsFileType(file, ScannerConstants.ZipFileType))
             {
                 return await ZipAnalyzer.AnalyzeAsync(file, cancellationToken);
             }
-            else if (FileHelper.IsFileType(file, jarFileType))
+            else if (FileHelper.IsFileType(file, ScannerConstants.JarFileType))
             {
                 return await JarAnalyzer.AnalyzeAsync(file, cancellationToken);
             }
@@ -112,7 +128,12 @@ public class JarScanner
         }
     }
 
-    public void SetStatus(ScannerStatus status, string? message = null)
+    /// <summary>
+    /// Updates the status of the scanner.
+    /// </summary>
+    /// <param name="status"></param>
+    /// <param name="message"></param>
+    private void SetStatus(ScannerStatus status, string? message = null)
     {
         Status = status;
         StatusMessage = message;

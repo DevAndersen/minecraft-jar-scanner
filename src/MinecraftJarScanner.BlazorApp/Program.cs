@@ -33,8 +33,7 @@ app.MapRazorComponents<App>()
 // The API endpoint for downloading log files.
 app.MapGet("/scanner/{scannerId:guid}/log", (Guid scannerId, ScannerService scannerService) =>
 {
-    Scanner? scanner = scannerService.GetScanner(scannerId);
-    if (scanner == null)
+    if (!scannerService.TryGetScanner(scannerId, out Scanner? scanner))
     {
         return Results.NotFound();
     }
