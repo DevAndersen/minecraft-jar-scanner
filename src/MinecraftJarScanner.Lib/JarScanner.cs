@@ -107,7 +107,14 @@ public class JarScanner
         {
             if (FileHelper.IsFileType(file, ScannerConstants.ZipFileType))
             {
-                return await ZipAnalyzer.AnalyzeAsync(file, cancellationToken);
+                IScannerResult result = await ZipAnalyzer.AnalyzeAsync(file, cancellationToken);
+                if (result is ScannerResultZipFile zip)
+                {
+                    return DoesZipContainRelevantResults(zip)
+                        ? result
+                        : null;
+                }
+                return null;
             }
             else if (FileHelper.IsFileType(file, ScannerConstants.JarFileType))
             {
@@ -126,6 +133,32 @@ public class JarScanner
                 Exception = e
             };
         }
+    }
+
+    /// <summary>
+    /// Looks through <paramref name="scannerResultZipFile"/> recursively to determine if it contains any non-zip results.
+    /// This is to detect and exclude <c>.zip</c> results that do not contain any potentially relevant files.
+    /// </summary>
+    /// <param name="scannerResultZipFile"></param>
+    /// <returns></returns>
+    private static bool DoesZipContainRelevantResults(ScannerResultZipFile scannerResultZipFile)
+    {
+        foreach (IScannerResult result in scannerResultZipFile.Results)
+        {
+            if (result is ScannerResultZipFile zip)
+            {
+                if (DoesZipContainRelevantResults(zip))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>

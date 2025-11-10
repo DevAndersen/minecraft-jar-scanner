@@ -77,6 +77,6 @@ public class ScannerService
     /// <returns></returns>
     public byte[] GetLogFile(Scanner scanner)
     {
-        return JsonSerializer.SerializeToUtf8Bytes(scanner, _logFileSerializationOptions);
+        return JsonSerializer.SerializeToUtf8Bytes(scanner.Results, _logFileSerializationOptions);
     }
 }

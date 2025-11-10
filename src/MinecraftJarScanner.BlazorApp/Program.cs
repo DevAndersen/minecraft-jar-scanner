@@ -30,7 +30,7 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// The API endpoint for downloading log files.
+// The API endpoint for saving log files.
 app.MapGet("/scanner/{scannerId:guid}/log", (Guid scannerId, ScannerService scannerService) =>
 {
     if (!scannerService.TryGetScanner(scannerId, out Scanner? scanner))
@@ -43,7 +43,7 @@ app.MapGet("/scanner/{scannerId:guid}/log", (Guid scannerId, ScannerService scan
     return Results.File(
         json,
         "application/json",
-        $"minecraft-jar-log_{DateTimeOffset.UtcNow:yyyy-MM-dd_HH-mm-ss}.txt");
+        $"minecraft-jar-scanner-log_{DateTimeOffset.UtcNow:yyyy-MM-dd_HH-mm-ss}.txt");
 });
 
 app.Run();

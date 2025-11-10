@@ -45,23 +45,37 @@
 </div>
 
 <!-- Results -->
-@if (Scanner.Results.Count > 0)
+@if (Scanner.Status != ScannerStatus.Idle)
 {
     <h2 class="fs-3">Results</h2>
     <div class="bg-body border rounded shadow-sm p-3 mb-4">
+        @if (Scanner.Status == ScannerStatus.Scanning)
+        {
+            <div class="d-flex flex-column">
+                <div class="mx-auto mb-3 fw-bold">Scanning...</div>
+                <div class="mx-auto spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        }
+        else if (Scanner.Results.Count == 0)
+        {
+            <div class="d-flex justify-content-center fw-bold p-4 mx-auto">Scan did not return any results</div>
+        }
+        else
+        {
+            <!-- Save log -->
+            <form action="scanner/@(Scanner.Id)/log">
+                <input class="btn btn-primary" type="submit" value="Save log file" />
+            </form>
 
-        <!-- Download log -->
-        <form action="scanner/@(Scanner.Id)/log">
-            <input class="btn btn-primary" type="submit" value="Download log" />
-        </form>
-
-        <ul>
-            @foreach (IScannerResult result in Scanner.Results)
-            {
-                <ScannerResultView Item="result" />
-            }
-        </ul>
-
+            <ul class="ps-0">
+                @foreach (IScannerResult result in Scanner.Results)
+                {
+                    <ScannerResultView Item="result" />
+                }
+            </ul>
+        }
     </div>
 }
 

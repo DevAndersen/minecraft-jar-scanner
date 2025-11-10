@@ -1,36 +1,39 @@
-﻿<li>
-	<div class="d-flex">
-		<i class="bi @GetIconClasses(Item) me-1"></i>
-		<div class="user-select-all">@Item.Name</div>
-	</div>
-
-	<div class="text-secondary fs-6 fst-italic user-select-all">@Item.FullPath</div>
-
-	@if (Item is ScannerResultJarFile java)
-	{
-		<div>Java</div>
-		<div class="user-select-all">@java.Hash</div>
-	}
-	else if (Item is ScannerResultZipFile zip)
-	{
-		<ul>
-			@foreach (IScannerResult nestedItem in zip.Results)
-			{
-				<ScannerResultView Item="nestedItem" />
-			}
-		</ul>
-	}
-	else if (Item is ScannerResultError error)
-	{
-		<div>
-			<div>Error - @error.Exception.GetType().Name</div>
-			<pre class="overflow-scroll">@error.Exception</pre>
+﻿<li class="ps-2 py-2 my-1 d-flex">
+	<div class="rounded-pill @GetIndicatorClass()" style="padding-inline: 2px"></div>
+	<div class="ps-2 py-1 w-100">
+		<div class="d-flex user-select-all">
+			<i class="bi @GetIconClasses() me-1"></i>
+			<span class="text-secondary">@Item.FullPath.Substring(0, Item.FullPath.Length - Item.Name.Length)</span><span class="fw-bold">@Item.Name</span>
 		</div>
-	}
-	else
-	{
-		<div>Unexpected scanner result type @Item.GetType().FullName</div>
-	}
+
+		@if (Item is ScannerResultJarFile java)
+		{
+			<div><span class="fw-bold">MD5: </span><span class="user-select-all font-monospace">@java.Hash</span></div>
+			<span class="badge rounded-pill text-success bg-success-subtle border border-success-subtle">Success</span>
+			<span class="badge rounded-pill text-primary bg-primary-subtle border border-primary-subtle">Primary</span>
+			<span class="badge rounded-pill text-danger bg-danger-subtle border border-danger-subtle">Danger</span>
+		}
+		else if (Item is ScannerResultZipFile zip)
+		{
+			<ul class="ps-2">
+				@foreach (IScannerResult nestedItem in zip.Results)
+				{
+					<ScannerResultView Item="nestedItem" />
+				}
+			</ul>
+		}
+		else if (Item is ScannerResultError error)
+		{
+			<div class="p-1 rounded text-danger bg-danger-subtle border border-danger-subtle user-select-all">
+				<div>Error - @error.Exception.GetType().Name</div>
+				<pre class="m-0 ">@error.Exception</pre>
+			</div>
+		}
+		else
+		{
+			<div>Unexpected scanner result type @Item.GetType().FullName</div>
+		}
+	</div>
 </li>
 
 @code
@@ -38,14 +41,25 @@
 	[Parameter, EditorRequired]
 	public required IScannerResult Item { get; init; }
 
-	private static string GetIconClasses(IScannerResult item)
+	private string GetIconClasses()
 	{
-		return item switch
+		return Item switch
 		{
 			ScannerResultJarFile => "bi-archive-fill text-success",
 			ScannerResultZipFile => "bi-file-earmark-zip-fill text-primary",
 			ScannerResultError => "bi-file-earmark-x text-danger",
 			_ => "bi-question-circle-fill text-danger"
+		};
+	}
+
+	private string GetIndicatorClass()
+	{
+		return Item switch
+		{
+			ScannerResultJarFile => "bg-success",
+			ScannerResultZipFile => "bg-primary",
+			ScannerResultError => "bg-danger",
+			_ => "bg-primary"
 		};
 	}
 }

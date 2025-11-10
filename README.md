@@ -36,7 +36,7 @@ To build this project from source, you need the [.NET SDK](https://dotnet.micros
 
 **Q:** Does this application gather any personal data or telemetry?
 
-- **A:** No, none of your personal data is gathered or sent anywhere. Do note though, that if you download a log file after a scan, it will contain the full paths of the files it found, which may contain things like your local username that might be considered sensitive data. You should therefore read these files through before sending them to anyone, in order to make sure that you are not sending any information that you might not wish to share with others.
+- **A:** No, none of your personal data is gathered or sent anywhere. Do note though, that if you save a log file after a scan, it will contain the full paths of the files it found, which may contain things like your local username that might be considered sensitive data. You should therefore read these files through before sending them to anyone, in order to make sure that you are not sending any information that you might not wish to share with others.
 
 ## Disclaimer
 
