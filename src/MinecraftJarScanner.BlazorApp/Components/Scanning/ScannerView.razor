@@ -1,6 +1,7 @@
 ﻿@using MinecraftJarScanner.Lib.Models
 @inject ScannerService ScannerService
 @inject NavigationManager NavMan
+@implements IDisposable
 
 <div class="hstack gap-3 mb-3">
 
@@ -81,8 +82,29 @@
 
 @code
 {
+    private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+    private readonly PeriodicTimer _periodicTimer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+
     [Parameter, EditorRequired]
     public required Scanner Scanner { get; init; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Update the view every five seconds.
+        await Task.Run(async () =>
+        {
+            try
+            {
+                while (await _periodicTimer.WaitForNextTickAsync(_cancellationTokenSource.Token))
+                {
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
+        });
+    }
 
     private async Task StartAsync()
     {
@@ -98,5 +120,12 @@
     {
         await ScannerService.DeleteScannerAsync(Scanner);
         NavMan.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource.Dispose();
+        _periodicTimer.Dispose();
     }
 }
