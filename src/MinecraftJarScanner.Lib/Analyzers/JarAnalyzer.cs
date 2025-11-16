@@ -15,7 +15,8 @@ internal static class JarAnalyzer
     }
 
     public static async Task<IScannerResult> AnalyzeAsync(Stream stream, string path, CancellationToken cancellationToken)
-    {        // Copy content to memory stream, so the stream position can be reset.
+    {
+        // Copy content to memory stream, so the stream position can be reset.
         using MemoryStream ms = new MemoryStream();
         await stream.CopyToAsync(ms, cancellationToken);
         ms.Position = 0;
@@ -39,13 +40,46 @@ internal static class JarAnalyzer
         using ZipArchive jar = await ZipArchive.CreateAsync(ms, ZipArchiveMode.Read, true, Encoding.UTF8, cancellationToken);
         try
         {
+            bool hasRubyDungRubyDungClass = jar.Has("com/mojang/rubydung/RubyDung.class");
+            bool hasMinecraftRubyDungClass = jar.Has("com/mojang/minecraft/RubyDung.class");
+
+            bool hasClientComMinecraftClass = jar.Has("com/mojang/minecraft/Minecraft.class");
+            bool hasClientNetMainClass = jar.Has("net/minecraft/client/main.class");
+
+            bool hasClientComAppletClass = jar.Has("com/mojang/minecraft/MinecraftApplet.class");
+            bool hasClientNetAppletClass = jar.Has("net/minecraft/client/MinecraftApplet.class");
+
+            bool hasServerComServerClass = jar.Has("com/mojang/minecraft/server/MinecraftServer.class");
+            bool hasServerNetServerClass = jar.Has("net/minecraft/server/MinecraftServer.class");
+
+            bool hasServerNetBundleMain = jar.Has("net/minecraft/bundler/Main.class");
+
+            bool hasClientMetaInf = jar.Has(
+                "META-INF/MANIFEST.MF",
+                "META-INF/MOJANG_C.SF",
+                "META-INF/MOJANG_C.DSA"
+            );
+
+            bool hasServerMetaInf = jar.Has("META-INF/MANIFEST.MF");
+
             JarFlags flags = new JarFlags
             {
-                HasMinecraftClientMetaInf = ContainsClientMetaInf(jar),
-                HasRubyDungClass = HasRubyDungClass(jar),
-                HasMinecraftAppletClass = HasMinecraftAppletClass(jar),
-                HasMinecraftClass = HasMinecraftClass(jar),
-                HasMinecraftServerClass = HasMinecraftServerClass(jar),
+                HasRubyDungRubyDungClass = hasRubyDungRubyDungClass,
+                HasMinecraftRubyDungClass = hasMinecraftRubyDungClass,
+
+                HasClientComMinecraftClass = hasClientComMinecraftClass,
+                HasClientNetMainClass = hasClientNetMainClass,
+
+                HasClientComAppletClass = hasClientComAppletClass,
+                HasClientNetAppletClass = hasClientNetAppletClass,
+
+                HasServerComServerClass = hasServerComServerClass,
+                HasServerNetServerClass = hasServerNetServerClass,
+
+                HasServerNetBundleMain = hasServerNetBundleMain,
+
+                HasClientMetaInf = hasClientMetaInf,
+                HasServerMetaInf = hasServerMetaInf,
             };
 
             return new ScannerResultJarFile
@@ -68,65 +102,42 @@ internal static class JarAnalyzer
 
     private static JarEvaluation EvaluateFlags(JarFlags flags)
     {
-        if (flags.HasRubyDungClass)
+        bool hasClientMetaInf = flags.HasClientMetaInf;
+        bool hasServerMetaInf = flags.HasServerMetaInf && !flags.HasClientMetaInf;
+
+        if (flags.HasRubyDungRubyDungClass || flags.HasMinecraftRubyDungClass)
         {
-            return JarEvaluation.RubyDungClient;
+            return new JarEvaluation(JarKind.RubyDungClient, hasClientMetaInf);
         }
 
-        return JarEvaluation.UnrelatedJar;
-    }
+        if (flags.HasClientComMinecraftClass || flags.HasClientNetMainClass || flags.HasClientComAppletClass || flags.HasClientNetAppletClass)
+        {
+            return new JarEvaluation(JarKind.Client, hasClientMetaInf);
+        }
 
-    private static bool HasRubyDungClass(ZipArchive archive)
-    {
-        return archive.Has("com/mojang/rubydung/RubyDung.class")
-            || archive.Has("com/mojang/minecraft/RubyDung.class");
-    }
+        if (flags.HasServerComServerClass || flags.HasServerNetServerClass || flags.HasServerNetBundleMain)
+        {
+            return new JarEvaluation(JarKind.Server, hasServerMetaInf);
+        }
 
-    private static bool HasMinecraftAppletClass(ZipArchive archive)
-    {
-        return archive.Has("com/mojang/minecraft/MinecraftApplet.class");
-    }
-
-    private static bool HasMinecraftClass(ZipArchive archive)
-    {
-        return archive.Has("com/mojang/minecraft/Minecraft.class");
-    }
-
-    private static bool HasMinecraftServerClass(ZipArchive archive)
-    {
-        return archive.Has("com/mojang/minecraft/server/MinecraftServer.class");
-    }
-
-    private static bool ContainsClientMetaInf(ZipArchive jar)
-    {
-        return jar.Has([
-            "META-INF/MANIFEST.MF",
-            "META-INF/MOJANG_C.SF",
-            "META-INF/MOJANG_C.DSA"
-        ]);
+        return new JarEvaluation(JarKind.UnrelatedJar, false);
     }
 }
 
 file static class Extensions
 {
-    extension(ZipArchive jar)
+    // Todo: Replace with extension member syntax once https://github.com/dotnet/roslyn/issues/80024 has been resolved,
+    // and move the extension block into the class above.
+    public static bool Has(this ZipArchive jar, params ReadOnlySpan<string> files)
     {
-        public bool Has(string file)
+        foreach (string file in files)
         {
-            return jar.GetEntry(file) != null;
-        }
-
-        public bool Has(ReadOnlySpan<string> files)
-        {
-            foreach (string file in files)
+            if (jar.GetEntry(file) == null)
             {
-                if (jar.GetEntry(file) == null)
-                {
-                    return false;
-                }
+                return false;
             }
-
-            return true;
         }
+
+        return true;
     }
 }
