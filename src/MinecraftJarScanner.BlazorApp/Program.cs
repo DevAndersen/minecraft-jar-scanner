@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using MinecraftJarScanner.BlazorApp.Components;
+using System.Diagnostics;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,42 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
 }
+
+// Startup event.
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    IServer server = app.Services.GetRequiredService<IServer>();
+    ILogger<Program> logger = app.Services.GetRequiredService<ILogger<Program>>();
+
+    IServerAddressesFeature? addresses = server.Features.Get<IServerAddressesFeature>();
+    string? firstAddress = addresses?.Addresses.FirstOrDefault();
+
+    if (firstAddress == null)
+    {
+        logger.LogError("Failed to determine host port");
+    }
+    else
+    {
+        logger.LogInformation("Starting Minecraft Jar Scanner on: {address}", firstAddress);
+
+        // Attempt to navigate to the site with the default web launcher.
+        if (!Debugger.IsAttached)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(firstAddress)
+                {
+                    UseShellExecute = true
+                });
+            }
+            catch
+            {
+            }
+        }
+    }
+
+    logger.LogInformation("Press Ctrl+C to shut down");
+});
 
 app.UseAntiforgery();
 
