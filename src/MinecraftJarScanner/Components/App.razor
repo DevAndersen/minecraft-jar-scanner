@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="icon" type="image/x-icon" href="@Assets["lib/bootstrap-icons/icons/search.svg"]">
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets[$"{typeof(Program).Assembly.GetName().Name}.styles.css"]" />
+    <ImportMap />
+    <HeadOutlet />
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="@Assets["lib/bootstrap/css/bootstrap.min.css"]" />
+    <script src="@Assets["lib/bootstrap/js/bootstrap.bundle.min.js"]"></script>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="@Assets["lib/bootstrap-icons/font/bootstrap-icons.min.css"]" />
+</head>
+
+<body class="bg-body-secondary">
+    <Routes @rendermode="InteractiveServer" />
+    <script src="_framework/blazor.web.js"></script>
+</body>
+
+</html>

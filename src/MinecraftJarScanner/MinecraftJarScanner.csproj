@@ -1,10 +1,25 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<!-- Publish as self contained -->
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<SelfContained>true</SelfContained>
+		<PublishedTrimmed>false</PublishedTrimmed>
+		<PublishSingleFile>true</PublishSingleFile>
+		<PublishReadyToRun>true</PublishReadyToRun>
+		<IsWebConfigTransformDisabled>true</IsWebConfigTransformDisabled>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	</PropertyGroup>
+
+	<!-- Files that should be embedded and/or removed from output -->
+	<ItemGroup Condition="'$(Configuration)'=='Release'">
+		<EmbeddedResource Include="appsettings.json" />
+		<Content Update="appsettings.json" CopyToPublishDirectory="Never" />
+		<Content Update="appsettings.*.json" CopyToPublishDirectory="Never" />
+		<Content Update="libman.json" CopyToPublishDirectory="Never" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MinecraftJarScanner.Lib\MinecraftJarScanner.Lib.csproj" />
+	</ItemGroup>
 
 </Project>

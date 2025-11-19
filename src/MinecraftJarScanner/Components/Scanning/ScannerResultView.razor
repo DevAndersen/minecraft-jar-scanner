@@ -1,0 +1,86 @@
+﻿<li class="ps-2 py-2 my-1 d-flex">
+	<div class="rounded-pill @GetIndicatorClass()" style="padding-inline: 2px"></div>
+	<div class="ps-2 py-2 w-100">
+		<div class="d-flex user-select-all pb-2">
+			<i class="bi @GetIconClasses() me-1"></i>
+			<span class="text-secondary">@Item.FullPath.Substring(0, Item.FullPath.Length - Item.Name.Length)</span><span class="fw-bold">@Item.Name</span>
+		</div>
+
+		@if (Item is ScannerResultJarFile java)
+		{
+			string kindColor = java.Evaluation.Kind == JarKind.UnrelatedJar ? "danger" : "success";
+			string metaInfColor = java.Evaluation.HasMetaInf ? "success" : "danger";
+			string metaInfText = java.Evaluation.HasMetaInf ? "MetaInf" : "Missing MetaInf";
+			IEnumerable<PropertyInfo> flags = java.Flags.GetType().GetProperties().Where(x => x.GetValue(java.Flags) is true);
+
+			<div class="d-flex flex-column" style="gap: 4px">
+				<div class="d-flex" style="gap: 8px">
+					<span class="fw-bold">Evaluation:</span>
+					<span class="badge rounded-pill text-@kindColor bg-@kindColor-subtle border border-@kindColor-subtle">@java.Evaluation.Kind</span>
+					<span class="badge rounded-pill text-@metaInfColor bg-@metaInfColor-subtle border border-@metaInfColor-subtle">@metaInfText</span>
+				</div>
+
+				<div class="d-flex" style="gap: 8px">
+					<span class="fw-bold">Flags:</span>
+					@foreach (PropertyInfo flag in flags)
+					{
+						<span class="badge rounded-pill text-primary bg-primary-subtle border border-primary-subtle">@flag.Name</span>
+					}
+				</div>
+
+				<div class="d-flex" style="gap: 8px">
+					<span class="fw-bold">MD5:</span>
+					<span class="user-select-all font-monospace">@java.Hash</span>
+				</div>
+			</div>
+		}
+		else if (Item is ScannerResultZipFile zip)
+		{
+			<ul class="ps-2">
+				@foreach (IScannerResult nestedItem in zip.Results)
+				{
+					<ScannerResultView Item="nestedItem" />
+				}
+			</ul>
+		}
+		else if (Item is ScannerResultError error)
+		{
+			<div class="p-1 rounded text-danger bg-danger-subtle border border-danger-subtle user-select-all">
+				<div>Error - @error.Exception.GetType().Name</div>
+				<pre class="m-0 ">@error.Exception</pre>
+			</div>
+		}
+		else
+		{
+			<div>Unexpected scanner result type @Item.GetType().FullName</div>
+		}
+	</div>
+</li>
+
+@code
+{
+	[Parameter, EditorRequired]
+	public required IScannerResult Item { get; init; }
+
+	private string GetIconClasses()
+	{
+		return Item switch
+		{
+			ScannerResultJarFile => "bi-archive-fill text-success",
+			ScannerResultZipFile => "bi-file-earmark-zip-fill text-primary",
+			ScannerResultError => "bi-file-earmark-x text-danger",
+			_ => "bi-question-circle-fill text-danger"
+		};
+	}
+
+	private string GetIndicatorClass()
+	{
+		return Item switch
+		{
+			ScannerResultJarFile => "bg-success",
+			ScannerResultZipFile => "bg-primary",
+			ScannerResultError => "bg-danger",
+			_ => "bg-primary"
+		};
+	}
+}

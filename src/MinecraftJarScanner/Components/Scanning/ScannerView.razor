@@ -1,0 +1,130 @@
+﻿@inject ScannerService ScannerService
+@inject NavigationManager NavMan
+@implements IDisposable
+
+<div class="hstack gap-3 mb-3">
+
+    <!-- Back -->
+    <a class="btn btn-primary shadow-sm" href="/">Back to overview</a>
+
+    <!-- Controls -->
+    <div class="btn-group shadow-sm ms-auto" role="group">
+        @if (Scanner.IsRunning)
+        {
+            <button class="btn btn-warning" type="button" @onclick="@(async () => await Scanner.CancelAsync())">Cancel</button>
+        }
+        else
+        {
+            <button class="btn btn-success" type="button" @onclick="@(async () => await Scanner.StartAsync())">Start scan</button>
+        }
+        <button class="btn btn-danger" @onclick="DeleteAsync">Delete scanner</button>
+    </div>
+</div>
+
+<div class="bg-body border rounded shadow-sm p-3 mb-4">
+
+    <!-- Status -->
+    <div class="fs-5 mb-2">Status: <span class="badge text-bg-@StatusHelper.GetColorName(Scanner.Status)">@Scanner.Status</span></div>
+
+    <!-- Path -->
+    <div class="input-group mb-3">
+        <span class="input-group-text">Path</span>
+        <input type="text" class="form-control" placeholder="Example: C:\User\Username\..." aria-label="Directory path" @bind-value="@Scanner.ScannerPath" disabled="@Scanner.IsRunning">
+    </div>
+
+</div>
+
+<!-- Status message -->
+<div class="p-2">
+    @if (!string.IsNullOrWhiteSpace(Scanner.StatusMessage))
+    {
+        <div class="alert alert-@(StatusHelper.GetColorName(Scanner.Status))" role="alert">
+            @Scanner.StatusMessage
+        </div>
+    }
+</div>
+
+<!-- Results -->
+@if (Scanner.Status != ScannerStatus.Idle)
+{
+    <h2 class="fs-3">Results</h2>
+    <div class="bg-body border rounded shadow-sm p-3 mb-4">
+        @if (Scanner.Status == ScannerStatus.Scanning)
+        {
+            <div class="d-flex flex-column">
+                <div class="mx-auto mb-3 fw-bold">Scanning...</div>
+                <div class="mx-auto spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        }
+        else if (Scanner.Results.Count == 0)
+        {
+            <div class="d-flex justify-content-center fw-bold p-4 mx-auto">Scan did not return any results</div>
+        }
+        else
+        {
+            <!-- Save log -->
+            <form action="scanner/@(Scanner.Id)/log">
+                <input class="btn btn-primary" type="submit" value="Save log file" />
+            </form>
+
+            <ul class="ps-0">
+                @foreach (IScannerResult result in Scanner.Results)
+                {
+                    <ScannerResultView Item="result" />
+                }
+            </ul>
+        }
+    </div>
+}
+
+@code
+{
+    private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+    private readonly PeriodicTimer _periodicTimer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+
+    [Parameter, EditorRequired]
+    public required Scanner Scanner { get; init; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Update the view every five seconds.
+        await Task.Run(async () =>
+        {
+            try
+            {
+                while (await _periodicTimer.WaitForNextTickAsync(_cancellationTokenSource.Token))
+                {
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
+        });
+    }
+
+    private async Task StartAsync()
+    {
+        await Scanner.StartAsync();
+    }
+
+    private async Task CancelAsync()
+    {
+        await Scanner.CancelAsync();
+    }
+
+    private async Task DeleteAsync()
+    {
+        await ScannerService.DeleteScannerAsync(Scanner);
+        NavMan.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource.Dispose();
+        _periodicTimer.Dispose();
+    }
+}

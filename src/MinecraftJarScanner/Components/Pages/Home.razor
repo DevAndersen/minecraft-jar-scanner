@@ -1,0 +1,35 @@
+﻿@page "/"
+@inject ScannerService ScannerService
+
+<button class="btn btn-success shadow-sm mb-3" @onclick="@ScannerService.CreateNewScanner">New scanner</button>
+
+@foreach (Scanner scanner in ScannerService.GetScanners())
+{
+    <div class="bg-body border rounded shadow-sm p-3 mb-4">
+
+        <!-- Status -->
+        <div class="fs-5 mb-2">Status: <span class="badge text-bg-@StatusHelper.GetColorName(scanner.Status)">@scanner.Status</span></div>
+
+        <!-- Path -->
+        <div class="input-group mb-3">
+            <span class="input-group-text">Path</span>
+            <input type="text" class="form-control" placeholder="Example: C:\User\Username\..." aria-label="Directory path" @bind-value="@scanner.ScannerPath" disabled="@scanner.IsRunning">
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex flex-row" style="gap: 6px">
+            <a class="btn btn-primary" href="/scanner/@scanner.Id">Open scanner</a>
+
+            @if (scanner.IsRunning)
+            {
+                <button class="btn btn-warning" type="button" @onclick="@(async () => await scanner.CancelAsync())">Cancel</button>
+            }
+            else
+            {
+                <button class="btn btn-success" type="button" @onclick="@(async () => await scanner.StartAsync())">Start scan</button>
+            }
+
+            <button class="btn btn-danger" @onclick="@(async () => await ScannerService.DeleteScannerAsync(scanner))">Delete scanner</button>
+        </div>
+    </div>
+}
