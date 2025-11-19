@@ -1,4 +1,4 @@
-﻿namespace MinecraftJarScanner.BlazorApp.Helpers;
+﻿namespace MinecraftJarScanner.Helpers;
 
 /// <summary>
 /// Contains helper logic related to <see cref="ScannerStatus"/>.

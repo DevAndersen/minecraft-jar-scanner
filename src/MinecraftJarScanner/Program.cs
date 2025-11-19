@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
-using MinecraftJarScanner.BlazorApp.Components;
+using MinecraftJarScanner.Components;
 using System.Diagnostics;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);

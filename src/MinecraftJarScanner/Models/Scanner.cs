@@ -1,4 +1,4 @@
-﻿namespace MinecraftJarScanner.BlazorApp.Models;
+﻿namespace MinecraftJarScanner.Models;
 
 public class Scanner
 {

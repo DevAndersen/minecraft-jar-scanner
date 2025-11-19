@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace MinecraftJarScanner.BlazorApp.Services.Scanning;
+namespace MinecraftJarScanner.Services.Scanning;
 
 /// <summary>
 /// Provides logic for managing scanners.
