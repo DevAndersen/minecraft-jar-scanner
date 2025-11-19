@@ -1,0 +1,48 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: LibMan
+      run: |
+          dotnet tool install -g microsoft.web.librarymanager.cli
+          pushd "./src/MinecraftJarScanner"
+          libman restore
+          popd
+
+    - name: Publish
+      run: dotnet publish "./src/MinecraftJarScanner/MinecraftJarScanner.csproj" -r win-x64 -o "./release"
+
+    - name: Zip published output
+      run: |
+        pushd "./release"
+        zip -r ../MinecraftJarScanner.zip ./*
+        popd
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type == 'tag'
+      with:
+        name: Release ${{ github.ref_name }}
+        tag_name: ${{ github.ref  }}
+        body: |
+          This is release ${{ github.ref_name }}
+        files: MinecraftJarScanner.zip
