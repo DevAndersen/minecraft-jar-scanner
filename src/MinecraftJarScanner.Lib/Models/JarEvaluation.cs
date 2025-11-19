@@ -1,3 +1,5 @@
-﻿namespace MinecraftJarScanner.Lib.Models;
+﻿using System.Text.Json.Serialization;
 
-public record JarEvaluation(JarKind Kind, bool HasMetaInf);
+namespace MinecraftJarScanner.Lib.Models;
+
+public record JarEvaluation([property: JsonConverter(typeof(JsonStringEnumConverter))] JarKind Kind, bool HasMetaInf);

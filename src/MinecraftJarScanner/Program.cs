@@ -82,7 +82,7 @@ app.MapGet("/scanner/{scannerId:guid}/log", (Guid scannerId, ScannerService scan
     return Results.File(
         json,
         "application/json",
-        $"minecraft-jar-scanner-log_{DateTimeOffset.UtcNow:yyyy-MM-dd_HH-mm-ss}.txt");
+        $"minecraft-jar-scanner-log_{DateTimeOffset.UtcNow:yyyy-MM-dd_HH-mm-ss}.json");
 });
 
 app.Run();
