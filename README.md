@@ -46,7 +46,7 @@ Once set up, do the following:
 
 ## Q&A
 
-**Q:** Where can I suggestions and bug reports?
+**Q:** Where can I submit suggestions and bug reports?
 
 - **A:** You are more than welcome to open an issue with your query, or if you want to contribute code, a pull request.
 
