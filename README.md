@@ -10,7 +10,7 @@ Minecraft Jar Scanner is an application designed to scan your computer for Minec
 
 The primary goal is to help search for potentially missing versions of Minecraft's client and server `.jar` files.
 
-The application uses a web-based user interface (using [Bootstrap](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor)), hosted by a locally run web server (using [Blazor](https://aka.ms/blazor)). It does not send or receive any information over the Internet, it simply uses your web browser as its frontend.
+The application uses a web-based user interface (using [Bootstrap](https://getbootstrap.com/)), hosted by a locally run web server (using [Blazor](https://aka.ms/blazor)). It does not send or receive any information over the Internet, it simply uses your web browser as its frontend.
 
 You can also save the results of a scan to a [`.json`](https://en.wikipedia.org/wiki/JSON) file, which makes it easy to read exactly what the scan found and how it evaluated the files it found.
 
@@ -46,7 +46,7 @@ Once set up, do the following:
 
 ## Q&A
 
-**Q:** I have a bug/suggestion, what now?
+**Q:** Where can I suggestions and bug reports?
 
 - **A:** You are more than welcome to open an issue with your query, or if you want to contribute code, a pull request.
 
@@ -60,7 +60,7 @@ Once set up, do the following:
 
 **Q:** Why is the user interface accessed via a web browser?
 
-- **A:** I mostly work with [Blazor](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor) these days, which I also chose to use for this application. I simply felt it was the easiest choice for me to writing a user interface in.
+- **A:** I mostly work with Blazor these days, which is why I chose to use for this application. I simply felt it was the easiest choice for me to writing a user interface in.
 
 **Q:** Does this application gather any personal data or telemetry?
 
